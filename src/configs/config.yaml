@@ -74,7 +74,7 @@ br:
             
             trust_classification:
                 column_name: 'notification_rate'
-                cuts: [0, 0.25, 0.4, 0.5, 1.001]
+                cuts: [0, 0.3, 0.4, 0.6, 1.001]
                 categories: [3, 2, 1, 0]
         date_update: "15/09/2020"
     indicators:
