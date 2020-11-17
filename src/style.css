@@ -412,13 +412,13 @@ header>.toolbar { /* Hide toolbar menu */
 }
 
 .logo-bold {
-    font-size: 64px;
+    font-size: 48px;
     color: var(--main-primary);
     font-weight: bold;
 }
 
 .logo-lighter {
-    font-size: 64px;
+    font-size: 48px;
     color: var(--main-primary);
     font-weight: lighter;
 }
@@ -473,15 +473,14 @@ header>.toolbar { /* Hide toolbar menu */
     }
 
     .logo-bold {
-        font-size: 48px;
+        font-size: 24px;
     }
 
     .logo-lighter {
-        font-size: 48px;
+        font-size: 24px;
     }
     
     .hero-container-product {
-        margin-top: var(--main-item-margin);
         font-size: 48px;
         line-height: 50px;
     }
@@ -492,12 +491,14 @@ header>.toolbar { /* Hide toolbar menu */
     
 
     .hero-container-subtitle {
-        margin-top: 0.5rem;
+        margin-top: 1rem;
         font-size: 24px;
     }
 
 
     .hero-container-image {
+        margin-top: 0.5em;
+        margin-bottom: 1em;
         margin-left: auto;
         width: 350px;
         height: 100%;
@@ -1108,7 +1109,7 @@ header>.toolbar { /* Hide toolbar menu */
     border: 1px solid var(--main-white);
     box-sizing: border-box;
     border-radius: 15px;
-    width: 150px;
+    width: 200px;
     padding: 0.5em;
     text-transform: uppercase;
     font-family: var(--main-header-font-family);
@@ -1119,7 +1120,7 @@ header>.toolbar { /* Hide toolbar menu */
     font-size: 18px;
     animation-name: fadein;
     animation-duration: 3s;
-    margin-top: 1.5em;
+    /* margin-top: 1.5em; */
 }
   
 .info-btn:hover {

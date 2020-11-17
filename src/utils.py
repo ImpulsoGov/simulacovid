@@ -565,20 +565,66 @@ def genHeroSection(title1: str, title2: str, subtitle: str, logo: str, header: b
     else:
         header = """<br>"""
 
+    # Info
+    banner = f"""<a href="#novidades" class="info-btn" style:"margin-left:1em">Veja como navegar</a>
+        <div id="novidades" class="nov-modal-window">
+            <div>
+                <a href="#" title="Close" class="info-btn-close" style="color: white;">&times</a>
+                <div style="margin: 10px 15px 15px 15px;">
+                    <h1 class="primary-span">Saiba como cada ferramenta apoia a resposta ao coronavírus</h1>
+                    <p class="darkblue-span uppercase"> <b>Farol Covid</b> </p>
+                    <img class="img-modal" src={config["br"]["icons"]["farolcovid_logo"]} alt="Ícone Farol Covid">
+                    <div>
+                        <p> <b>Importante: mudamos a metodologia dos indicadores - veja mais em Modelos, limitações e fontes no menu lateral.</b> Descubra o nível de alerta do estado, regional de saúde ou município de acordo com os indicadores:</p>
+                        - <b>Situação da doença</b>: média de novos casos 100 mil por habitantes;</br>
+                        - <b>Controle da doença</b>: taxa de contágio</br>
+                        - <b>Capacidade do sistema</b>: tempo para ocupação de leitos UTI</br>
+                        - <b>Confiança de dados</b>: taxa de subnotificação de casos</br><br>
+                    </div>
+                    <div>
+                    <p class="darkblue-span uppercase"> <b>SimulaCovid</b> </p>
+                    <img class="img-modal" src=%s alt="Ícone SimulaCovid">  
+                    <p style="height:100px;">Simule o que pode acontecer com o sistema de saúde local se o ritmo de contágio aumentar 
+                        ou diminuir e planeje suas ações para evitar a sobrecarga hospitalar.</p>
+                    </div>
+                    <div>
+                    <p class="darkblue-span uppercase"> <b>Distanciamento Social</b> </p>
+                    <img class="img-modal" src={config["br"]["icons"]["distanciamentosocial_logo"]} alt="Ícone Distanciamento Social">
+                        <p style="height:100px;">Acompanhe a atualização diária do índice e descubra como está a circulação de pessoas 
+                            e o distanciamento social no seu estado ou município.    
+                        </p>
+                    </div>
+                    <div>
+                    <p class="darkblue-span uppercase"> <b>Saúde em Ordem</b> </p>
+                    <img class="img-modal" src={config["br"]["icons"]["saudeemordem_logo"]} alt="Ícone Saúde em Ordem">
+                    <p> Entenda quais atividades deveriam reabrir primeiro no seu estado ou regional, considerando:
+                        - <b>Segurança Sanitária</b>: quais setores têm menor exposição à Covid-19?</br>
+                        - <b>Contribuição Econômica</b>: quais setores movimentam mais a economia local?</br></p>
+                    <p> </p>
+                    </div>
+                    <div>
+                    <p class="darkblue-span uppercase"> <b>Onda Covid</b> </p>
+                    <img class="img-modal" src={config["br"]["icons"]["ondacovid_logo"]} alt="Ícone Onda Covid">
+                    <p>Com base no número de óbitos de Covid-19 registrados, acompanhe se seu município já saiu do pico da doença. </p>
+                    </div>
+                </div>
+            </div>"""
+
     st.write(
         f"""
         <div class="base-wrapper hero-bg">
             <div class="hero-wrapper">
-            <div class="hero-container">
-                {header}
                 <div class="hero-container-content">
+                    {header}
                     <span class="hero-container-product primary-span">{title1}<br/>{title2}</span>
                     <span class="hero-container-subtitle primary-span">{subtitle}</span>
                 </div>
-            </div>
                 <div class="hero-container-image">   
                     <img style="width: 100%;" src={logo}/>
                 </div>
+            </div>
+            <div class="hero-container-content">
+                <br>{banner}
             </div>
         </div>
         """,
