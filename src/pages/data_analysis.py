@@ -429,10 +429,13 @@ def prepare_heatmap(
 
 
 def main(session_state=None):
-    user_analytics = amplitude.gen_user(utils.get_server_session())
-    opening_response = user_analytics.safe_log_event(
+    # Amplitude: Get user info
+    user_analytics = amplitude.Amplitude_user()
+    user_analytics.gen_user(utils.get_server_session())
+    user_analytics.safe_log_event(
         "opened analysis", session_state, is_new_page=True
     )
+
     utils.localCSS("style.css")
     utils.localCSS("icons.css")
 

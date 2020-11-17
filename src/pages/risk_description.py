@@ -9,8 +9,10 @@ from pages import rt_description
 
 
 def main(session_state):
-    user_analytics = amplitude.gen_user(utils.get_server_session())
-    opening_response = user_analytics.safe_log_event(
+    # Amplitude: Get user info
+    user_analytics = amplitude.Amplitude_user()
+    user_analytics.gen_user(utils.get_server_session())
+    user_analytics.safe_log_event(
         "opened risk_level", session_state, is_new_page=True
     )
 

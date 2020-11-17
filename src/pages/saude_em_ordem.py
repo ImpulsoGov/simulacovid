@@ -254,7 +254,11 @@ def gen_slider(session_state):
         </div>""",
         unsafe_allow_html=True,
     )
-    amplitude.gen_user(utils.get_server_session()).safe_log_event(
+
+    # Amplitude: Get user info
+    user_analytics = amplitude.Amplitude_user()
+    user_analytics.gen_user(utils.get_server_session())
+    user_analytics.safe_log_event(
         "chose saude_slider_value",
         session_state,
         event_args={"slider_value": session_state.saude_ordem_data["slider_value"]},
@@ -285,8 +289,13 @@ def gen_detailed_vision(economic_data, session_state, config):
     )
     if st.button(
         "Visão Detalhada"
-    ):  # If the button is clicked just alternate the opened flag and plot it
-        amplitude.gen_user(utils.get_server_session()).safe_log_event(  # Logs the event
+    ):  
+        # If the button is clicked just alternate the opened flag and plot it
+        
+        # Amplitude: Get user info
+        user_analytics = amplitude.Amplitude_user()
+        user_analytics.gen_user(utils.get_server_session())
+        user_analytics.safe_log_event(
             "picked saude_em_ordem_detailed_view",
             session_state,
             event_args={

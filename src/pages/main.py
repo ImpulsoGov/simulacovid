@@ -324,8 +324,9 @@ def main(session_state):
         # ====
 
     # Amplitude: Get user info
-    user_analytics = amplitude.gen_user(utils.get_server_session())
-    opening_response = user_analytics.safe_log_event(
+    user_analytics = amplitude.Amplitude_user()
+    user_analytics.gen_user(utils.get_server_session())
+    user_analytics.safe_log_event(
         "opened farol", session_state, is_new_page=True
     )
 
@@ -343,71 +344,6 @@ def main(session_state):
     )
 
     config = yaml.load(open("configs/config.yaml", "r"), Loader=yaml.FullLoader)
-
-    # TEMPORARY BANNER FC
-    st.write(
-        """
-        <div>
-            <div class="base-wrapper flex flex-column" style="background-color:#0090A7">
-                <div class="white-span header p1" style="font-size:30px;">O FAROLCOVID ESTÁ DE CARA NOVA!</div>
-                <span class="white-span">Aprimoramos a plataforma, a metodologia e adicionamos novas ferramentas para acompanhamento da crise da Covid-19 no Brasil.<br><b>Que tal explorar com a gente?</b></span>
-                <br><div style="margin-top: 15px;"></div>
-            <div>
-                <a href="#novidades" class="info-btn">Entenda como navegar</a>
-            </div>
-            <div id="novidades" class="nov-modal-window">
-                <div>
-                    <a href="#" title="Close" class="info-btn-close" style="color: white;">&times</a>
-                    <div style="margin: 10px 15px 15px 15px;">
-                        <h1 class="primary-span">Saiba como cada ferramenta apoia a resposta ao coronavírus</h1>
-                        <p class="darkblue-span uppercase"> <b>Farol Covid</b> </p>
-                        <img class="img-modal" src=%s alt="Ícone Farol Covid">
-                        <div>
-                            <p> <b>Importante: mudamos a metodologia dos indicadores - veja mais em Modelos, limitações e fontes no menu lateral.</b> Descubra o nível de alerta do estado, regional de saúde ou município de acordo com os indicadores:</p>
-                            - <b>Situação da doença</b>: média de novos casos 100 mil por habitantes;</br>
-                            - <b>Controle da doença</b>: taxa de contágio</br>
-                            - <b>Capacidade do sistema</b>: tempo para ocupação de leitos UTI</br>
-                            - <b>Confiança de dados</b>: taxa de subnotificação de casos</br><br>
-                        </div>
-                        <div>
-                        <p class="darkblue-span uppercase"> <b>SimulaCovid</b> </p>
-                        <img class="img-modal" src=%s alt="Ícone SimulaCovid">  
-                        <p style="height:100px;">Simule o que pode acontecer com o sistema de saúde local se o ritmo de contágio aumentar 
-                            ou diminuir e planeje suas ações para evitar a sobrecarga hospitalar.</p>
-                        </div>
-                        <div>
-                        <p class="darkblue-span uppercase"> <b>Distanciamento Social</b> </p>
-                        <img class="img-modal" src=%s alt="Ícone Distanciamento Social">
-                            <p style="height:100px;">Acompanhe a atualização diária do índice e descubra como está a circulação de pessoas 
-                                e o distanciamento social no seu estado ou município.    
-                            </p>
-                        </div>
-                        <div>
-                        <p class="darkblue-span uppercase"> <b>Saúde em Ordem</b> </p>
-                        <img class="img-modal" src=%s alt="Ícone Saúde em Ordem">
-                        <p> Entenda quais atividades deveriam reabrir primeiro no seu estado ou regional, considerando:
-                            - <b>Segurança Sanitária</b>: quais setores têm menor exposição à Covid-19?</br>
-                            - <b>Contribuição Econômica</b>: quais setores movimentam mais a economia local?</br></p>
-                        <p> </p>
-                        </div>
-                        <div>
-                        <p class="darkblue-span uppercase"> <b>Onda Covid</b> </p>
-                        <img class="img-modal" src=%s alt="Ícone Onda Covid">
-                        <p>Com base no número de óbitos de Covid-19 registrados, acompanhe se seu município já saiu do pico da doença. </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>"""
-        % (
-            config["br"]["icons"]["farolcovid_logo"],
-            config["br"]["icons"]["simulacovid_logo"],
-            config["br"]["icons"]["distanciamentosocial_logo"],
-            config["br"]["icons"]["saudeemordem_logo"],
-            config["br"]["icons"]["ondacovid_logo"],
-        ),
-        unsafe_allow_html=True,
-    )
 
     st.write(
         """
@@ -439,7 +375,7 @@ def main(session_state):
         ),
     )
 
-    changed_city = user_analytics.safe_log_event(
+    user_analytics.safe_log_event(
         "picked farol place",
         session_state,
         event_args={"state": user_input["state_name"], "city": user_input["city_name"]},
@@ -640,7 +576,7 @@ def main(session_state):
 
     # INDICATORS PLOTS
     if st.button("Confira a evolução de indicadores-chave"):
-        opening_response = user_analytics.log_event("picked key_indicators", dict())
+        user_analytics.log_event("picked key_indicators", dict())
         if st.button("Esconder"):
             pass
         st.write(

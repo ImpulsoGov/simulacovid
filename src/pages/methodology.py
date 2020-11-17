@@ -7,10 +7,10 @@ from pages import model_description, saude_em_ordem_description, risk_descriptio
 
 
 def main(session_state):
-    # Analytics
-    user_analytics = amplitude.gen_user(utils.get_server_session())
-    opening_response = user_analytics.safe_log_event(
-        "opened saude_em_ordem_description", session_state, is_new_page=True
+    # Amplitude: Get user info
+    user_analytics = amplitude.Amplitude_user().gen_user(utils.get_server_session())
+    user_analytics.safe_log_event(
+        event="opened saude_em_ordem_description", session_state=session_state, is_new_page=True
     )
 
     # Layout

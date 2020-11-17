@@ -12,30 +12,33 @@ headers = {"Content-Type": "application/json", "Accept": "*/*"}
 r = requests.post("https://api.amplitude.com/2/httpapi", params={}, headers=headers)
 
 
-def gen_user(current_server_session):
-    """ Returns the current user on the page as our Amplitude User Object"""
-    data = utils.parse_headers(current_server_session.ws.request)
-    user_data = {"has_precise_ip": False}
-    if "user_public_data" in data["Cookie"].keys():
-        for key in data["Cookie"]["user_public_data"].keys():
-            user_data[key] = data["Cookie"]["user_public_data"][key]
-        user_data["has_precise_ip"] = True
-    else:
-        user_data["ip"] = data["Remote_ip"]
-    if "user_unique_id" in data["Cookie"].keys():
-        user_data["user_id"] = data["Cookie"]["user_unique_id"]
-    else:
-        user_data["user_id"] = "unknown_user_placeholder"
-    for inkey in data.keys():
-        if inkey[:3] == "ua_":
-            user_data[inkey] = data[inkey]
-    return Amplitude_user(os.getenv("AMPLITUDE_KEY"), user_data)
-
-
 class Amplitude_user:
-    def __init__(self, apikey, inuser_data):
-        self.key = apikey
-        self.user_data = inuser_data
+    def __init__(self):
+        pass
+
+    def gen_user(self, current_server_session):
+        if os.getenv("IS_DEV").upper() == "FALSE":
+            self.current_server_session = current_server_session
+
+            # Generate the current user on the page as our Amplitude User Object
+            data = utils.parse_headers(current_server_session.ws.request)
+            user_data = {"has_precise_ip": False}
+            if "user_public_data" in data["Cookie"].keys():
+                for key in data["Cookie"]["user_public_data"].keys():
+                    user_data[key] = data["Cookie"]["user_public_data"][key]
+                user_data["has_precise_ip"] = True
+            else:
+                user_data["ip"] = data["Remote_ip"]
+            if "user_unique_id" in data["Cookie"].keys():
+                user_data["user_id"] = data["Cookie"]["user_unique_id"]
+            else:
+                user_data["user_id"] = "unknown_user_placeholder"
+            for inkey in data.keys():
+                if inkey[:3] == "ua_":
+                    user_data[inkey] = data[inkey]
+
+            self.key = os.getenv("AMPLITUDE_KEY")
+            self.user_data = user_data
 
     def log_event(self, event, event_args=dict()):
         """
@@ -43,34 +46,35 @@ class Amplitude_user:
          like inside buttons for example.
          For other circumstances use the safe version.
         """
-        # print("logging : " + event + " at " + str(datetime.datetime.now()))
-        event_data = {
-            "user_id": self.user_data["user_id"],
-            "event_type": event,
-            "event_properties": event_args,
-            "ip": self.user_data["ip"],
-            # "device_id": self.user_data["user_id"],
-        }
-        request_data = dict()
-        if self.user_data["has_precise_ip"]:
-            event_data["dma"] = self.user_data["city"]
-            event_data["country"] = self.user_data["country_name"]
-            event_data["region"] = self.user_data["region"]
-            event_data["city"] = self.user_data["city"]
-            event_data["location_lat"] = self.user_data["latitude"]
-            event_data["location_lng"] = self.user_data["longitude"]
-            event_data["carrier"] = self.user_data["isp"]
-        for inkey in self.user_data.keys():
-            if inkey[:3] == "ua_":
-                event_data[inkey[3:]] = self.user_data[inkey]
-        request_data["api_key"] = self.key
-        request_data["events"] = [event_data]
-        response = requests.post(
-            "https://api.amplitude.com/2/httpapi", json=request_data, headers=headers
-        )
-        # print(request_data)
-        # print(response.json())
-        return response.json()
+        if os.getenv("IS_DEV").upper() == "FALSE":
+            # print("logging : " + event + " at " + str(datetime.datetime.now()))
+            event_data = {
+                "user_id": self.user_data["user_id"],
+                "event_type": event,
+                "event_properties": event_args,
+                "ip": self.user_data["ip"],
+                # "device_id": self.user_data["user_id"],
+            }
+            request_data = dict()
+            if self.user_data["has_precise_ip"]:
+                event_data["dma"] = self.user_data["city"]
+                event_data["country"] = self.user_data["country_name"]
+                event_data["region"] = self.user_data["region"]
+                event_data["city"] = self.user_data["city"]
+                event_data["location_lat"] = self.user_data["latitude"]
+                event_data["location_lng"] = self.user_data["longitude"]
+                event_data["carrier"] = self.user_data["isp"]
+            for inkey in self.user_data.keys():
+                if inkey[:3] == "ua_":
+                    event_data[inkey[3:]] = self.user_data[inkey]
+            request_data["api_key"] = self.key
+            request_data["events"] = [event_data]
+            response = requests.post(
+                "https://api.amplitude.com/2/httpapi", json=request_data, headers=headers
+            )
+            # print(request_data)
+            # print(response.json())
+            return response.json()
 
     def safe_log_event(  # For use in areas subject to various reruns
         self,
@@ -97,51 +101,52 @@ class Amplitude_user:
 
         Alternatively it can trigger empty event_args events by checking if it is True or False, if it is False then we log and
         make it True. If it is True we ignore."""
-        if session_state.amplitude_events is None:
-            session_state.amplitude_events = dict()
-            session_state.old_amplitude_events = dict()
-        if (
-            is_new_page
-        ):  # If it is the opening of a new page we only register the event if the opening is really new
+        if os.getenv("IS_DEV").upper() == "FALSE":
+            if session_state.amplitude_events is None:
+                session_state.amplitude_events = dict()
+                session_state.old_amplitude_events = dict()
             if (
-                event not in session_state.old_amplitude_events.keys()
-                or session_state.old_amplitude_events[event] is not True
-            ):  # If the page wasnt opened before or is brand new event
-                for (
-                    key
-                ) in session_state.old_amplitude_events.keys():  # Reset the old dict
-                    session_state.old_amplitude_events[key] = None
-                session_state.old_amplitude_events[
-                    event
-                ] = True  # Say that he have opened the page
-                session_state.amplitude_events[
-                    event
-                ] = True  # Say that we will keep it open
-                self.log_event(event, event_args)  # Log the event
-        else:  # If it is not a new page we have to check for differences in the state
-            if (
-                event not in session_state.old_amplitude_events.keys()
-                # If the event is brand new
-                or (
-                    session_state.old_amplitude_events[event] is None
-                    # If the event had been reseted
-                    or session_state.old_amplitude_events[event] is False
-                    # If the even was inactive or not chosen
+                is_new_page
+            ):  # If it is the opening of a new page we only register the event if the opening is really new
+                if (
+                    event not in session_state.old_amplitude_events.keys()
+                    or session_state.old_amplitude_events[event] is not True
+                ):  # If the page wasnt opened before or is brand new event
+                    for (
+                        key
+                    ) in session_state.old_amplitude_events.keys():  # Reset the old dict
+                        session_state.old_amplitude_events[key] = None
+                    session_state.old_amplitude_events[
+                        event
+                    ] = True  # Say that he have opened the page
+                    session_state.amplitude_events[
+                        event
+                    ] = True  # Say that we will keep it open
+                    self.log_event(event, event_args)  # Log the event
+            else:  # If it is not a new page we have to check for differences in the state
+                if (
+                    event not in session_state.old_amplitude_events.keys()
+                    # If the event is brand new
                     or (
-                        session_state.old_amplitude_events[event] not in [True, False]
-                        and session_state.old_amplitude_events[event] != event_args
-                    )
-                )  # If the event has been changed
-            ):
-                self.log_event(event, event_args)  # Log the event
-                if len(event_args.keys()) == 0:  # If the event comes in empty
-                    session_state.amplitude_events[event] = True
-                else:  # Else we save the relevant data to look for changes later
-                    session_state.amplitude_events[event] = event_args
-                for alternative in alternatives:
-                    # If we have alternatives we must make sure to mark them all as not chosen
-                    if alternative != event:
-                        session_state.amplitude_events[alternative] = False
+                        session_state.old_amplitude_events[event] is None
+                        # If the event had been reseted
+                        or session_state.old_amplitude_events[event] is False
+                        # If the even was inactive or not chosen
+                        or (
+                            session_state.old_amplitude_events[event] not in [True, False]
+                            and session_state.old_amplitude_events[event] != event_args
+                        )
+                    )  # If the event has been changed
+                ):
+                    self.log_event(event, event_args)  # Log the event
+                    if len(event_args.keys()) == 0:  # If the event comes in empty
+                        session_state.amplitude_events[event] = True
+                    else:  # Else we save the relevant data to look for changes later
+                        session_state.amplitude_events[event] = event_args
+                    for alternative in alternatives:
+                        # If we have alternatives we must make sure to mark them all as not chosen
+                        if alternative != event:
+                            session_state.amplitude_events[alternative] = False
 
     def conclude_user_session(
         self, session_state
@@ -153,5 +158,6 @@ class Amplitude_user:
         and begin a new one. This means effectively updating our manager saying that the entire page loaded sucessfully
         and that now we should look into the future.
         """
-        session_state.old_amplitude_events = dict(session_state.amplitude_events)
+        if os.getenv("IS_DEV").upper() == "FALSE":
+            session_state.old_amplitude_events = dict(session_state.amplitude_events)
 

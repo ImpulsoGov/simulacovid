@@ -91,7 +91,9 @@ def _prepare_simulation(user_input, config):
 
 
 def main(user_input, indicators, data, config, session_state):
-    user_analytics = amplitude.gen_user(utils.get_server_session())
+    # Amplitude: Get user info
+    user_analytics = amplitude.Amplitude_user()
+    user_analytics.gen_user(utils.get_server_session())
 
     utils.localCSS("style.css")
 

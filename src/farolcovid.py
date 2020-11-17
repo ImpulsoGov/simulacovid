@@ -1,6 +1,7 @@
 # coding=utf-8
 import streamlit as st
 import yaml
+import os
 
 # Environment Variables from '../.env'
 from dotenv import load_dotenv
@@ -59,8 +60,10 @@ def main():
     # In those amplitude events objects we are going to save a dict with every state as keys
     # in each state, the value will be something that allows us to identify there is a change or not
     # which in turn allows us to decide if we should log the event or not
-    utils.manage_user_existence(utils.get_server_session(), session_state)
-    utils.update_user_public_info()
+    if os.getenv("IS_DEV").upper() == "FALSE":
+        utils.manage_user_existence(utils.get_server_session(), session_state)
+        utils.update_user_public_info()
+
     # CLOSES THE SIDEBAR WHEN THE USER LOADS THE PAGE
     st.write(
         """
